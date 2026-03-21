@@ -1,0 +1,13 @@
+import boto3
+
+client=  boto3.client('sqs', region_name='us-west-2')
+
+# queue_url = 'https://sqs.us-west-2.amazonaws.com/697429983773/signup-data-queue'
+
+response = client.send_message(
+    QueueUrl='https://sqs.us-west-2.amazonaws.com/697429983773/signup-data-queue',
+    MessageBody='Hii, This is my First time Using SQS',
+    DelaySeconds=1
+)
+
+
