@@ -2,29 +2,30 @@ import boto3
 
 client = boto3.client('sqs')
 
-# #here we are sending the msg in sqs
-# response = client.send_message(
-#     QueueUrl='https://sqs.us-west-2.amazonaws.com/697429983773/signup-data-queue',
-#     MessageBody='Hii, This is my First time Using SQS',
-#     DelaySeconds=1
-# )
-
 # to receive message
-response = client.receive_message(
-    QueueUrl = 'https://sqs.us-west-2.amazonaws.com/697429983773/signup-data-queue'   
+try:
+    response = client.receive_message(
+        QueueUrl = 'https://sqs.us-west-2.amazonaws.com/697429983773/signup-data-queue'   
 )
 # we also need receipt handle to delete msg
 # It is a temporary permission token given by AWS(receipthandle)
 # to get receipt handle
-message = response['Messages'][0]
-receipt_handle=message['ReceiptHandle']
 
 
-client.delete_message(
-    QueueUrl='https://sqs.us-west-2.amazonaws.com/697429983773/signup-data-queue',
-    ReceiptHandle=receipt_handle
-    )
+    message = response['Messages'][0]
+    receipt_handle=message['ReceiptHandle']
 
-#     print("Deleted successfully")
-# else:
-#     print("No message Found")
+
+    client.delete_message(
+        QueueUrl='https://sqs.us-west-2.amazonaws.com/697429983773/signup-data-queue',
+        ReceiptHandle=receipt_handle
+        )
+    print("Message Deleted successfully")
+except client.exceptions.ReceiptHandleIsInvalid as e:
+    ptint("Invalit Receipt Handle")
+    
+except client.exceptions.QueueDoesNotExist as e:
+    print("Queue dose not Exit")
+
+except Exception as e:
+    print("No message Found",e)
