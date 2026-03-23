@@ -1,13 +1,37 @@
 import boto3
 
-client=  boto3.client('sqs', region_name='us-west-2')
+client=  boto3.client('sqs')
 
-# queue_url = 'https://sqs.us-west-2.amazonaws.com/697429983773/signup-data-queue'
+#queue_url = 'https://sqs.us-west-2.amazonaws.com/697429983773/signup-data-queue'
 
-response = client.send_message(
-    QueueUrl='https://sqs.us-west-2.amazonaws.com/697429983773/signup-data-queue',
-    MessageBody='Hii, This is my First time Using SQS',
-    DelaySeconds=1
-)
+#to send the messase
+def send_message(queueurl, messagebody):
+    try:
+        response=client.send_message(
+            QueueUrl=queueurl,
+            MessageBody=messagebody,
+            DelaySeconds=1
+        )
+    except client.exceptions.InvalidIdFormat as e:
+        print("Invalid ID Formate: please check the format for sending the Message",e)
 
+def receive_message(queueurl):
+    try:
+        response=client.receive_message(
+            QueueUrl=queueurl
+        )
+        print(response)
+        
+    except Exception as e:
+        print("No message Found",e)
 
+if __name__=='__main__':
+    try:
+        queueurl=input("Enter the URL of the Queue: ").strip()
+        messagebody=input("Enter the Message you want to send in the Queue: ").strip()
+        if len(messagebody) != 0:
+            send_message(queueurl, messagebody)
+        else:
+            print("PLease Enter the Message! ")
+    except Exception as e:
+        print("An Unknown error has Occured",e)
